@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize')
+
 require('dotenv').config()
 
 
@@ -23,7 +24,6 @@ async function syncModels(value) {
 		alter: { alter: true },
 		force: { force: true },
 	}
-
 	try {
 		await connection.sync(state[value] || '')
 		console.log(`All models were synchronized successfully using sync(${JSON.stringify(state[value]) || ''}).`)

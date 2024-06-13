@@ -80,4 +80,4 @@ const Users = connection.define('users', {
   }
 )
 
-module.exports = User
+module.exports = Users

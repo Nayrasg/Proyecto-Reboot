@@ -2,8 +2,6 @@ const { DataTypes } = require("sequelize")
 const { connection } = require('../../database') // Instancia de la conexión generado en el archivo index.js de la carpeta database
 
 
-const { DataTypes } = require('sequelize');
-const connection = require('./path/to/your/database/connection'); // Asegúrate de ajustar la ruta a tu archivo de conexión
 
 const ProductCard = connection.define('product_card', {
   product_id: {

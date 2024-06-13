@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize')
 require('dotenv').config()
 
 
-const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
+const connection = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
 	host: process.env.DB_HOST,
 	dialect: process.env.DIALECT,
 	port: process.env.DB_PORT,
@@ -11,7 +11,7 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USERNAME
 
 async function checkConnection() {
 	try {
-		await sequelize.authenticate()
+		await connection.authenticate()
 		console.log('Connection to DB has been established successfully.')
 	} catch (error) {
 		throw error
@@ -25,11 +25,11 @@ async function syncModels(value) {
 	}
 
 	try {
-		await sequelize.sync(state[value] || '')
+		await connection.sync(state[value] || '')
 		console.log(`All models were synchronized successfully using sync(${JSON.stringify(state[value]) || ''}).`)
 	} catch (error) {
 		throw error
 	}
 }
 
-module.exports = { sequelize, checkConnection, syncModels }
+module.exports = { connection, checkConnection, syncModels }

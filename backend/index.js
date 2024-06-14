@@ -3,6 +3,8 @@ const express = require('express')
 const defineRelations = require('./database/relaciones')
 const { checkConnection, syncModels } = require('./database')
 const morgan = require('morgan')
+
+
 const startDB = async () => {
   await checkConnection()          // 1. Comprobar conexión
   await defineRelations()  // 2. Importar modelos y definir sus relaciones
@@ -11,16 +13,17 @@ const startDB = async () => {
   // que modifique la estructura en el mysql
   //syncModels('alter')             // 3. Sincronizar modelos con la base de datos
 }
-const router = require("./api/routes") // Instancia del router principal, alojado en /api/routes/index.js
-const app = express()
 
+
+const router = require("./api/routes") // Instancia del router principal, alojado en /api/routes/index.js
+
+const app = express()
+app.use(morgan('dev'))
+app.use('/api', router) // Cualquier petición que llegue empezando con '/api' empleará el router principal importado en la línea 14
 app.listen(process.env.PORT, () => {
   console.log(`Server started! Listening on port ${process.env.PORT}`)
   startDB() // Iniciamos la conexión al servidor una vez nuestro servidor esté arrancado y esperando peticiones
 })
-app.use(morgan('dev'))
-app.use('/api', router) // Cualquier petición que llegue empezando con '/api' empleará el router principal importado en la línea 14
-
 
 
 

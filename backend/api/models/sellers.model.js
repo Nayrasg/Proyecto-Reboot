@@ -8,6 +8,14 @@ const Sellers = connection.define('sellers', {
     primaryKey: true,
     autoIncrement: true
   },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users',
+      key: 'user_id'
+    }
+  },
   seller_name: {
     type: DataTypes.STRING(250),
     allowNull: false

@@ -8,21 +8,25 @@ const Users = connection.define('users', {
       autoIncrement: true
     },
     rol: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.ENUM('visitante', 'cliente', 'vendedor', 'admin'),
       allowNull: false
     },
     user_name: {
       type: DataTypes.STRING(250),
+      allowNull: true
+    },
+    password: {
+      type: DataTypes.STRING(50),
       allowNull: false
     },
     surname: {
       type: DataTypes.STRING(250),
-      allowNull: false
+      allowNull: true
     },
     document_id: {
       type: DataTypes.STRING(25),
       unique: true,
-      allowNull: false
+      allowNull: true
     },
     email: {
       type: DataTypes.STRING(250),
@@ -34,23 +38,23 @@ const Users = connection.define('users', {
     },
     phone: {
       type: DataTypes.STRING(20),
-      allowNull: false
+      allowNull: true
     },
     province: {
       type: DataTypes.STRING(250),
-      allowNull: false
+      allowNull: true
     },
     location: {
       type: DataTypes.STRING(250),
-      allowNull: false
+      allowNull: true
     },
     street: {
       type: DataTypes.STRING(250),
-      allowNull: false
+      allowNull: true
     },
     street_number: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     floor: {
       type: DataTypes.INTEGER,
@@ -62,7 +66,7 @@ const Users = connection.define('users', {
     },
     birth_date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     }
     },
   {

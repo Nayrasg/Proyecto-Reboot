@@ -26,6 +26,14 @@ const OrdersProducts = connection.define('orders_products', {
   size: {
     type: DataTypes.STRING(3),
     allowNull: false
+  },
+  product_price: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  order_total_price: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
 }, {
   timestamps: false // Para desactivar el comportamiento automático de timestamps de Sequelize

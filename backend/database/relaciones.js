@@ -5,7 +5,11 @@ const ProductCards = require('../api/models/product_cards');
 const OrdersProducts = require('../api/models/orders_products');
 
 const defineRelations = async () => {
-// Users has many Orders
+//1 a 1 , un vendedor solo puede pertenecer aun usuario y un usuario solo puede tener un vendedor
+Users.hasOne(Sellers, { foreignKey: 'user_id' });
+Sellers.belongsTo(Users, { foreignKey: 'user_id' });
+
+  // Users has many Orders
 Users.hasMany(Orders, {
   foreignKey: 'user_id'
 })

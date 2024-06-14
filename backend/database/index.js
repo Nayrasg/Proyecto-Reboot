@@ -20,14 +20,14 @@ async function checkConnection() {
 	}
 }
 
-async function syncModels() {
-	/*const state = {
+async function syncModels(value) {
+	const state = {
 		alter: { alter: true },
 		force: { force: true },
-	}*/
+	}
 	try {
-		//await connection.sync(state[value] || '')
-		await connection.sync()
+		await connection.sync(state[value] || '')
+		//await connection.sync()
 		/*console.log(`All models were synchronized successfully using sync(${JSON.stringify(state[value]) || ''}).`)*/
 		console.log('Modelos sincronizados')
 	} catch (error) {

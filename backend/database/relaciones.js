@@ -1,7 +1,7 @@
 const Users = require('../api/models/users.model');
 const Sellers = require('../api/models/sellers.model');
 const Orders = require('../api/models/orders');
-const ProductCard = require('../api/models/product_card');
+const ProductCards = require('../api/models/product_cards');
 const OrdersProducts = require('../api/models/orders_products');
 
 const defineRelations = async () => {
@@ -21,11 +21,11 @@ Orders.belongsTo(Sellers, {
   foreignKey: 'seller_id'
 })
 
-// Sellers has many ProductCards
-Sellers.hasMany(ProductCard, {
+// Sellers has many ProductCards 
+Sellers.hasMany(ProductCards, {
   foreignKey: 'seller_id'
 })
-ProductCard.belongsTo(Sellers, {
+ProductCards.belongsTo(Sellers, {
   foreignKey: 'seller_id'
 })
 
@@ -38,10 +38,10 @@ OrdersProducts.belongsTo(Orders, {
 })
 
 // ProductCard has many OrdersProducts
-ProductCard.hasMany(OrdersProducts, {
+ProductCards.hasMany(OrdersProducts, {
   foreignKey: 'product_id'
 })
-OrdersProducts.belongsTo(ProductCard, {
+OrdersProducts.belongsTo(ProductCards, {
   foreignKey: 'product_id'
 })
 }

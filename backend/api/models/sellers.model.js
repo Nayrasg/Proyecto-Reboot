@@ -52,16 +52,6 @@ const Sellers = connection.define('sellers', {
   url_profile_picture: {
     type: DataTypes.STRING(255),
     allowNull: true
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
   }
 }, {
   timestamps: false // Para desactivar el comportamiento automático de timestamps de Sequelize

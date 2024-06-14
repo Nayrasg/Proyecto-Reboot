@@ -3,7 +3,7 @@ const { connection } = require('../../database') // Instancia de la conexión ge
 
 
 
-const ProductCard = connection.define('product_card', {
+const ProductCards = connection.define('product_cards', {
   product_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -44,19 +44,9 @@ const ProductCard = connection.define('product_card', {
   size_xl: {
     type: DataTypes.INTEGER,
     allowNull: true
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
   }
 }, {
   timestamps: false // Para desactivar el comportamiento automático de timestamps de Sequelize
 });
 
-module.exports = ProductCard;
+module.exports = ProductCards;

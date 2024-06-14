@@ -15,7 +15,7 @@ const OrdersProducts = connection.define('orders_products', {
     type: DataTypes.INTEGER,
     primaryKey: true,
     references: {
-      model: 'product_card',
+      model: 'product_cards',
       key: 'product_id'
     }
   },
@@ -25,16 +25,6 @@ const OrdersProducts = connection.define('orders_products', {
   },
   size: {
     type: DataTypes.STRING(3),
-    allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
     allowNull: false
   }
 }, {

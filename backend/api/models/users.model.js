@@ -63,17 +63,7 @@ const Users = connection.define('users', {
     birth_date: {
       type: DataTypes.DATE,
       allowNull: false
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      allowNull: false
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      allowNull: false
-     }
+    }
     },
   {
     timestamps: false // Indicamos que no queremos generar las columnas de 'fecha de creación' ni de 'fecha de última actualización'

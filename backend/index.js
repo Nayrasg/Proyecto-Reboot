@@ -2,20 +2,13 @@ require("dotenv").config() // Requerimos dotenv en el archivo principal para pod
 const express = require('express')
 const defineRelations = require('./database/relaciones')
 const {checkConnection,syncModels} = require('./database')
-/*
-checkConnection()         
-defineRelations()  
-    syncModels()
-*/
 
 const startDB = async () => {
     await checkConnection()          // 1. Comprobar conexión
     await defineRelations()  // 2. Importar modelos y definir sus relaciones
-    syncModels()             // 3. Sincronizar modelos con la base de datos
+    syncModels('alter')             // 3. Sincronizar modelos con la base de datos
     
   }
-
-  /*await defineRelations()  // 2. Importar modelos y definir sus relaciones
-    console.log('Salida')
-    syncModels()             // 3. Sincronizar modelos con la base de datos
-    */
+  
+  
+  startDB()

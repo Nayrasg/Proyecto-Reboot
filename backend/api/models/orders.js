@@ -43,16 +43,6 @@ const Orders = connection.define('orders', {
   total_order: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    allowNull: false
   }
 }, {
   timestamps: false // Para desactivar el comportamiento automático de timestamps de Sequelize

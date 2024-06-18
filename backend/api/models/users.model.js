@@ -15,7 +15,7 @@ const User = connection.define('User', {
       type: DataTypes.STRING(250),
   },
   password: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(250),
       allowNull: false,
   },
   surname: {

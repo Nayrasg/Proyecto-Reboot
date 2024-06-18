@@ -1,4 +1,3 @@
-/*
 const router = require("express").Router()
 
 const {
@@ -15,12 +14,17 @@ const {
     checkAdmin  // Middleware para proteger determinadas rutas, y que solo puedan ser ejecutadas por un usuario administrador
   } = require('../middelwares')
 
+
+router.post('/', createUser)
+router.get('/profile', checkAuth, getOwnProfile) // getOwnProfile requiere que el usuario esté logueado para realizar esta petición, ya que usamos el middleware de checkAuth
+module.exports = router
+
+
+/*
 router.get('/', checkAuth, checkAdmin, getAllUsers) // getAllUsers solo podrá ser ejecutada por un administrador, ya que hemos empleados los middlewares de checkAuth y checkAdmin
 router.get('/profile', checkAuth, getOwnProfile) // getOwnProfile requiere que el usuario esté logueado para realizar esta petición, ya que usamos el middleware de checkAuth
 router.get('/:id', getOneUser)
-router.post('/', createUser)
 router.put('/:id', updateOneUser)
 router.delete('/:id', deleteOneUser)
-
-module.exports = router
 */
+

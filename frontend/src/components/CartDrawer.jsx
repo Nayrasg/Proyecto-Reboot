@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -12,10 +12,32 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import { ListItemAvatar, Avatar } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { CartContext } from '../contexts/CartContext';
 
-const CartDrawer = ({ cartItems, drawerOpen, toggleDrawer, updateQuantity, removeItem }) => {
+const CartDrawer = () => {
+    const { cart, drawerOpen, toggleDrawer, updateQuantity, removeFromCart } = useContext(CartContext);
+    const navigate = useNavigate();
+
     const getTotalPrice = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+        return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+    };
+
+    const getTax = () => {
+        return (getTotalPrice() * 0.21).toFixed(2);
+    };
+
+    const getShippingCost = () => {
+        return 5.00;
+    };
+
+    const getTotalWithTaxAndShipping = () => {
+        return (parseFloat(getTotalPrice()) + parseFloat(getTax()) + getShippingCost()).toFixed(2);
+    };
+
+    const handleCheckout = () => {
+        toggleDrawer(false)();
+        navigate('/checkout');
     };
 
     return (
@@ -24,12 +46,12 @@ const CartDrawer = ({ cartItems, drawerOpen, toggleDrawer, updateQuantity, remov
                 <Typography variant="h6" sx={{ mb: 2 }}>Carrito</Typography>
                 <Divider sx={{ mb: 2 }} />
                 <List>
-                    {cartItems.length === 0 ? (
+                    {cart.length === 0 ? (
                         <ListItem>
                             <ListItemText primary="El carrito está vacío" />
                         </ListItem>
                     ) : (
-                        cartItems.map((item, index) => (
+                        cart.map((item, index) => (
                             <ListItem key={index} sx={{ alignItems: 'flex-start', flexDirection: 'column', alignItems: 'center' }}>
                                 <Box sx={{ display: 'flex', width: '100%', mb: 2, alignItems: 'center' }}>
                                     <ListItemAvatar>
@@ -41,8 +63,8 @@ const CartDrawer = ({ cartItems, drawerOpen, toggleDrawer, updateQuantity, remov
                                         />
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary={item.title}
-                                        secondary={`Precio unitario: ${(item.price * item.quantity).toFixed(2)} €`}
+                                        primary={`${item.title} - Talla: ${item.selectedSize}`}
+                                        secondary={`Precio unitario: ${item.price} €`}
                                         sx={{ flexGrow: 1 }}
                                     />
                                 </Box>
@@ -56,7 +78,7 @@ const CartDrawer = ({ cartItems, drawerOpen, toggleDrawer, updateQuantity, remov
                                             <AddIcon />
                                         </IconButton>
                                     </Box>
-                                    <IconButton onClick={() => removeItem(item)}>
+                                    <IconButton onClick={() => removeFromCart(item)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </Box>
@@ -64,14 +86,23 @@ const CartDrawer = ({ cartItems, drawerOpen, toggleDrawer, updateQuantity, remov
                         ))
                     )}
                 </List>
-                {cartItems.length > 0 && (
+                {cart.length > 0 && (
                     <>
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="h6">
-                                Total: {getTotalPrice()} €
+                                Subtotal: {getTotalPrice()} €
                             </Typography>
-                            <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                            <Typography variant="h6">
+                                IVA (21%): {getTax()} €
+                            </Typography>
+                            <Typography variant="h6">
+                                Envío: {getShippingCost().toFixed(2)} €
+                            </Typography>
+                            <Typography variant="h6">
+                                Total: {getTotalWithTaxAndShipping()} €
+                            </Typography>
+                            <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleCheckout}>
                                 Check Out
                             </Button>
                         </Box>

@@ -1,43 +1,16 @@
-import React, { useState } from 'react';
-import { Container, Grid, Card, CardContent, CardMedia, Typography, Button, Box, Tabs, Tab } from '@mui/material';
+import React, { useContext, useState } from 'react';
+import { Container, Grid, Card, CardContent, CardMedia, Typography, Button, Box, Tabs, Tab, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
-
-const allProducts = {
-    destacados: [
-        { id: 1, title: 'Producto 1', price: 19.90, image: 'url_to_image' },
-        { id: 2, title: 'Producto 2', price: 19.90, image: 'url_to_image' },
-        { id: 3, title: 'Producto 3', price: 19.90, image: 'url_to_image' },
-        { id: 4, title: 'Producto 4', price: 19.90, image: 'url_to_image' },
-        { id: 5, title: 'Producto 5', price: 19.90, image: 'url_to_image' },
-        { id: 6, title: 'Producto 6', price: 19.90, image: 'url_to_image' },
-    ],
-    nuevas: [
-        { id: 7, title: 'Producto 7', price: 19.90, image: 'url_to_image' },
-        { id: 8, title: 'Producto 8', price: 19.90, image: 'url_to_image' },
-        { id: 9, title: 'Producto 9', price: 19.90, image: 'url_to_image' },
-        { id: 10, title: 'Producto 10', price: 19.90, image: 'url_to_image' },
-        { id: 11, title: 'Producto 11', price: 19.90, image: 'url_to_image' },
-        { id: 12, title: 'Producto 12', price: 19.90, image: 'url_to_image' },
-    ],
-    populares: [
-        { id: 13, title: 'Producto 13', price: 19.90, image: 'url_to_image' },
-        { id: 14, title: 'Producto 14', price: 19.90, image: 'url_to_image' },
-        { id: 15, title: 'Producto 15', price: 19.90, image: 'url_to_image' },
-        { id: 16, title: 'Producto 16', price: 19.90, image: 'url_to_image' },
-        { id: 17, title: 'Producto 17', price: 19.90, image: 'url_to_image' },
-        { id: 18, title: 'Producto 18', price: 19.90, image: 'url_to_image' },
-    ],
-    ofertas: [
-        { id: 19, title: 'Producto 19', price: 19.90, image: 'url_to_image' },
-        { id: 20, title: 'Producto 20', price: 19.90, image: 'url_to_image' },
-        { id: 21, title: 'Producto 21', price: 19.90, image: 'url_to_image' },
-        { id: 22, title: 'Producto 22', price: 19.90, image: 'url_to_image' },
-        { id: 23, title: 'Producto 23', price: 19.90, image: 'url_to_image' },
-        { id: 24, title: 'Producto 24', price: 19.90, image: 'url_to_image' },
-    ],
-};
+import { CartContext } from '../contexts/CartContext';
+import banner1 from '../images/Baner1.jpg';
+import banner2 from '../images/Baner2.jpg';
+import banner3 from '../images/Baner3.jpg';
+import allProducts from '../data/products';
 
 const categoryNames = {
     destacados: 'Productos destacados',
@@ -48,78 +21,80 @@ const categoryNames = {
 
 const LandingPage = () => {
     const [value, setValue] = useState(0);
-    const [cart, setCart] = useState([]);
-    const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('destacados');
+    const [selectedSizes, setSelectedSizes] = useState({});
+    const [sizeError, setSizeError] = useState({});
+    const [stockError, setStockError] = useState({});
+    const { cart, addToCart } = useContext(CartContext);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
-        switch (newValue) {
-            case 0:
-                setSelectedCategory('destacados');
-                break;
-            case 1:
-                setSelectedCategory('nuevas');
-                break;
-            case 2:
-                setSelectedCategory('populares');
-                break;
-            case 3:
-                setSelectedCategory('ofertas');
-                break;
-            default:
-                setSelectedCategory('destacados');
+        const categories = ['destacados', 'nuevas', 'populares', 'ofertas'];
+        setSelectedCategory(categories[newValue] || 'destacados');
+    };
+
+    const handleSizeChange = (productId, size) => {
+        setSelectedSizes({ ...selectedSizes, [productId]: size });
+        setSizeError({ ...sizeError, [productId]: false });
+        setStockError({ ...stockError, [productId]: false });
+    };
+
+    const getAvailableStock = (productId, size) => {
+        const product = allProducts[selectedCategory].find((product) => product.id === productId);
+        if (product) {
+            return product.stock[size];
         }
+        return 0;
+    };
+
+    const getSelectedQuantity = (productId, size) => {
+        const cartItem = cart.find((item) => item.id === productId && item.selectedSize === size);
+        if (cartItem) {
+            return cartItem.quantity;
+        }
+        return 0;
     };
 
     const handleAddToCart = (product) => {
-        setCart((prevCart) => {
-            const existingProduct = prevCart.find((item) => item.id === product.id);
-            if (existingProduct) {
-                return prevCart.map((item) =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-                );
-            } else {
-                return [...prevCart, { ...product, quantity: 1 }];
-            }
-        });
-        setDrawerOpen(true);
-    };
-
-    const updateQuantity = (product, newQuantity) => {
-        if (newQuantity <= 0) {
-            removeItem(product);
-        } else {
-            setCart((prevCart) =>
-                prevCart.map((item) =>
-                    item.id === product.id ? { ...item, quantity: newQuantity } : item
-                )
-            );
-        }
-    };
-
-    const removeItem = (product) => {
-        setCart((prevCart) => prevCart.filter((item) => item.id !== product.id));
-    };
-
-    const toggleDrawer = (open) => (event) => {
-        if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+        const selectedSize = selectedSizes[product.id];
+        if (!selectedSize) {
+            setSizeError({ ...sizeError, [product.id]: true });
             return;
         }
-        setDrawerOpen(open);
+
+        const availableStock = getAvailableStock(product.id, selectedSize);
+        const selectedQuantity = getSelectedQuantity(product.id, selectedSize);
+
+        if (selectedQuantity >= availableStock) {
+            setStockError({ ...stockError, [product.id]: true });
+            return;
+        }
+
+        addToCart({ ...product, selectedSize });
+    };
+
+    const calculatePriceWithTax = (price) => {
+        return (price * 1.21).toFixed(2);
     };
 
     return (
         <>
-            <Navbar cartItems={cart} cartItemCount={cart.length} toggleDrawer={toggleDrawer} />
-            <CartDrawer
-                cartItems={cart}
-                drawerOpen={drawerOpen}
-                toggleDrawer={toggleDrawer}
-                updateQuantity={updateQuantity}
-                removeItem={removeItem}
-            />
+            <Navbar />
+            <CartDrawer />
             <Container sx={{ marginTop: 12, marginBottom: 12, pb: 8 }}>
+                <Box sx={{ marginBottom: 4 }}>
+                    <Carousel showThumbs={false} showStatus={false} autoPlay infiniteLoop>
+                        <div>
+                            <img src={banner1} alt="Banner 1" />
+                        </div>
+                        <div>
+                            <img src={banner2} alt="Banner 2" />
+                        </div>
+                        <div>
+                            <img src={banner3} alt="Banner 3" />
+                        </div>
+                    </Carousel>
+                </Box>
                 <Typography variant="h4" component="h1" gutterBottom>
                     {categoryNames[selectedCategory]}
                 </Typography>
@@ -135,21 +110,44 @@ const LandingPage = () => {
                     {allProducts[selectedCategory].map((product) => (
                         <Grid item key={product.id} xs={12} sm={6} md={4}>
                             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    image={product.image}
-                                    alt={product.title}
-                                />
+                                <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <CardMedia
+                                        component="img"
+                                        height="300"
+                                        image={product.image}
+                                        alt={product.title}
+                                    />
+                                </Link>
                                 <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                                     <Typography gutterBottom variant="h5" component="div" align="center">
                                         {product.title}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" align="center">
-                                        {product.price.toFixed(2)} €
+                                        Precio: {product.price.toFixed(2)} €<br />
+                                        Precio con IVA: {calculatePriceWithTax(product.price)} €
                                     </Typography>
                                 </CardContent>
-                                <Box sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', pb: 3 }}>
+                                    <FormControl sx={{ minWidth: 120, mr: 2 }}>
+                                        <InputLabel id={`size-select-label-${product.id}`}>Talla</InputLabel>
+                                        <Select
+                                            labelId={`size-select-label-${product.id}`}
+                                            value={selectedSizes[product.id] || ''}
+                                            onChange={(e) => handleSizeChange(product.id, e.target.value)}
+                                            error={sizeError[product.id]}
+                                        >
+                                            <MenuItem value="S">S</MenuItem>
+                                            <MenuItem value="M">M</MenuItem>
+                                            <MenuItem value="L">L</MenuItem>
+                                            <MenuItem value="XL">XL</MenuItem>
+                                        </Select>
+                                        {sizeError[product.id] && (
+                                            <Typography variant="body2" color="error">Selecciona una talla</Typography>
+                                        )}
+                                        {stockError[product.id] && (
+                                            <Typography variant="body2" color="error">No quedan más unidades de esta talla en stock</Typography>
+                                        )}
+                                    </FormControl>
                                     <Button
                                         variant="contained"
                                         color="primary"

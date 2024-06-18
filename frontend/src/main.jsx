@@ -6,18 +6,32 @@ import AvisoLegal from './pages/AvisoLegal';
 import CondicionesDeUso from './pages/CondicionesDeUso';
 import PoliticaDeCookies from './pages/PoliticaDeCookies';
 import Contacto from './pages/Contacto';
+import Signup from './pages/Signup';
+import ProductEditor from './pages/ProductEditor';
+import ProductDetail from './pages/ProductDetail';
+import AdminDashboard from './pages/AdminDashboard';
+import Checkout from './pages/Checkout';
+import { CartProvider } from './contexts/CartContext';
+
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-        <Router>
-            <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/aviso-legal" element={<AvisoLegal />} />
-                <Route path="/condiciones-de-uso" element={<CondicionesDeUso />} />
-                <Route path="/politica-de-cookies" element={<PoliticaDeCookies />} />
-                <Route path="/contacto" element={<Contacto />} />
-            </Routes>
-        </Router>
+        <CartProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/aviso-legal" element={<AvisoLegal />} />
+                    <Route path="/condiciones-de-uso" element={<CondicionesDeUso />} />
+                    <Route path="/politica-de-cookies" element={<PoliticaDeCookies />} />
+                    <Route path="/contacto" element={<Contacto />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/editor" element={<ProductEditor />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
+                </Routes>
+            </Router>
+        </CartProvider>
     </React.StrictMode>
-    );
+);

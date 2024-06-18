@@ -5,7 +5,7 @@ import { Box, Typography, Link } from '@mui/material';
 const Footer = () => {
     return (
         <Box sx={{ 
-            bgcolor: 'blue', 
+            bgcolor: '#84BFFD', 
             p: 2, 
             width: '100%', 
             position: 'fixed', 

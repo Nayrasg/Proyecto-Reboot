@@ -1,53 +1,58 @@
 const Users = require('../api/models/users.model');
-const Sellers = require('../api/models/sellers.model');
 const Orders = require('../api/models/orders');
 const ProductCards = require('../api/models/product_cards');
-const OrdersProducts = require('../api/models/orders_products');
+const OrdersItems = require('../api/models/orders_items');
 
 const defineRelations = async () => {
-//1 a 1 , un vendedor solo puede pertenecer aun usuario y un usuario solo puede tener un vendedor
-Users.hasOne(Sellers, { foreignKey: 'user_id' });
-Sellers.belongsTo(Users, { foreignKey: 'user_id' });
-
-  // Users has many Orders
+// Relación entre Users y Orders (cliente)
 Users.hasMany(Orders, {
-  foreignKey: 'user_id'
-})
+  foreignKey: 'user_id',
+  as: 'orders',
+});
 Orders.belongsTo(Users, {
-  foreignKey: 'user_id'
-})
+  foreignKey: 'user_id',
+  as: 'customer',
+});
 
-// Sellers has many Orders
-Sellers.hasMany(Orders, {
-  foreignKey: 'seller_id'
-})
-Orders.belongsTo(Sellers, {
-  foreignKey: 'seller_id'
-})
+// Relación entre Users y Orders (vendedor)
+Users.hasMany(Orders, {
+  foreignKey: 'vendor',
+  as: 'seller_orders',
+});
+Orders.belongsTo(Users, {
+  foreignKey: 'vendor',
+  as: 'seller',
+});
 
-// Sellers has many ProductCards 
-Sellers.hasMany(ProductCards, {
-  foreignKey: 'seller_id'
-})
-ProductCards.belongsTo(Sellers, {
-  foreignKey: 'seller_id'
-})
+// Relación entre Orders y OrdersItems
+Orders.hasMany(OrdersItems, {
+  foreignKey: 'order_id',
+  as: 'order_items',
+});
+OrdersItems.belongsTo(Orders, {
+  foreignKey: 'order_id',
+  as: 'order',
+});
 
-// Orders has many OrdersProducts
-Orders.hasMany(OrdersProducts, {
-  foreignKey: 'order_id'
-})
-OrdersProducts.belongsTo(Orders, {
-  foreignKey: 'order_id'
-})
+// Relación entre ProductCards y OrdersItems
+ProductCards.hasMany(OrdersItems, {
+  foreignKey: 'product_id',
+  as: 'order_items',
+});
+OrdersItems.belongsTo(ProductCards, {
+  foreignKey: 'product_id',
+  as: 'product_card',
+});
 
-// ProductCard has many OrdersProducts
-ProductCards.hasMany(OrdersProducts, {
-  foreignKey: 'product_id'
-})
-OrdersProducts.belongsTo(ProductCards, {
-  foreignKey: 'product_id'
-})
+// Relación entre ProductCards y Users (seller)
+ProductCards.belongsTo(Users, {
+  foreignKey: 'vendor',
+  as: 'seller',
+});
+Users.hasMany(ProductCards, {
+  foreignKey: 'vendor',
+  as: 'products',
+});
 }
 /*
 module.exports = {

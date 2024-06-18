@@ -1,77 +1,65 @@
 const { DataTypes } = require("sequelize")
 const { connection } = require('../../database') // Instancia de la conexión generado en el archivo index.js de la carpeta database
 
-const Users = connection.define('users', {
-    user_id: {
+const User = connection.define('User', {
+  user_id: {
       type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
-      autoIncrement: true
-    },
-    rol: {
-      type: DataTypes.ENUM('visitante', 'cliente', 'vendedor', 'admin'),
-      allowNull: false
-    },
-    user_name: {
+  },
+  rol: {
+      type: DataTypes.ENUM('cliente', 'vendedor', 'admin'),
+      defaultValue: 'cliente',
+  },
+  name: {
       type: DataTypes.STRING(250),
-      allowNull: true
-    },
-    password: {
+  },
+  password: {
       type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    surname: {
+      allowNull: false,
+  },
+  surname: {
       type: DataTypes.STRING(250),
-      allowNull: true
-    },
-    document_id: {
+  },
+  document_id: {
       type: DataTypes.STRING(25),
       unique: true,
-      allowNull: true
-    },
-    email: {
+  },
+  email: {
       type: DataTypes.STRING(250),
       unique: true,
       allowNull: false,
-      validate: {
-        isEmail: true
-      }
-    },
-    phone: {
+  },
+  phone: {
       type: DataTypes.STRING(20),
-      allowNull: true
-    },
-    province: {
+  },
+  province: {
       type: DataTypes.STRING(250),
-      allowNull: true
-    },
-    location: {
+  },
+  location: {
       type: DataTypes.STRING(250),
-      allowNull: true
-    },
-    street: {
+  },
+  street: {
       type: DataTypes.STRING(250),
-      allowNull: true
-    },
-    street_number: {
+  },
+  street_number: {
       type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    floor: {
+  },
+  floor: {
       type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    url_profile_picture: {
+  },
+  url_profile_picture: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    birth_date: {
+  },
+  birth_date: {
       type: DataTypes.DATE,
-      allowNull: true
-    }
-    },
-  {
-    timestamps: false // Indicamos que no queremos generar las columnas de 'fecha de creación' ni de 'fecha de última actualización'
+  },
+  file_pdf: {
+      type: DataTypes.STRING(250),
   }
-)
+}, {
+  tableName: 'users',
+  timestamps: false, // Si no quieres que Sequelize maneje createdAt y updatedAt
+});
 
-module.exports = Users
+module.exports = User;

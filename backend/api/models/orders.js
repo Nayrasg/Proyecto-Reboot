@@ -2,50 +2,37 @@ const { DataTypes } = require("sequelize")
 const { connection } = require('../../database') 
 
 
-const Orders = connection.define('orders', {
+const Orders = connection.define('Order', {
   order_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
   },
   user_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'users',
-      key: 'user_id'
-    }
+      type: DataTypes.INTEGER,
   },
-  seller_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'sellers',
-      key: 'seller_id'
-    }
+  vendor: {
+      type: DataTypes.INTEGER,
   },
   order_status: {
-    type: DataTypes.STRING(100),
-    allowNull: false
+      type: DataTypes.ENUM('procesando', 'enviado', 'entregado'),
+      defaultValue: 'procesando',
   },
   order_date: {
-    type: DataTypes.DATE,
-    allowNull: false
+      type: DataTypes.DATE,
   },
   shipping_cost: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+      type: DataTypes.DECIMAL(10, 2),
   },
   taxes: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+      type: DataTypes.DECIMAL(10, 2),
   },
   total_order: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+      type: DataTypes.DECIMAL(10, 2),
   }
 }, {
-  timestamps: false // Para desactivar el comportamiento automático de timestamps de Sequelize
+  tableName: 'order', // Especifica explícitamente el nombre de la tabla en singular
+  timestamps: false, // Si no quieres que Sequelize maneje createdAt y updatedAt
 });
 
 module.exports = Orders;

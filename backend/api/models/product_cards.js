@@ -3,50 +3,51 @@ const { connection } = require('../../database') // Instancia de la conexión ge
 
 
 
-const ProductCards = connection.define('product_cards', {
+const ProductCards = connection.define('ProductCard', {
   product_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
   },
-  seller_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'sellers',
-      key: 'seller_id'
-    }
+  vendor: {
+      type: DataTypes.INTEGER,
   },
-  name_product: {
-    type: DataTypes.STRING(250),
-    allowNull: false
+  title: {
+      type: DataTypes.STRING(250),
+      allowNull: false,
   },
-  url_product_picture: {
-    type: DataTypes.STRING(250),
-    allowNull: true
+  description: {
+      type: DataTypes.STRING(250),
   },
-  final_price: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
+  image: {
+      type: DataTypes.STRING(250),
   },
-  size_s: {
-    type: DataTypes.INTEGER,
-    allowNull: true
+  price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
   },
-  size_m: {
-    type: DataTypes.INTEGER,
-    allowNull: true
+  create_date: {
+      type: DataTypes.DATE,
   },
-  size_l: {
-    type: DataTypes.INTEGER,
-    allowNull: true
+  S: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
   },
-  size_xl: {
-    type: DataTypes.INTEGER,
-    allowNull: true
+  M: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+  },
+  L: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+  },
+  XL: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
   }
 }, {
-  timestamps: false // Para desactivar el comportamiento automático de timestamps de Sequelize
+    tableName: 'product_cards',
+    timestamps: false, // Si no quieres que Sequelize maneje createdAt y updatedAt
 });
 
 module.exports = ProductCards;

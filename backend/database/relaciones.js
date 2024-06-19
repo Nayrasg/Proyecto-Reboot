@@ -1,7 +1,7 @@
 const Users = require('../api/models/users.model');
 const Orders = require('../api/models/orders.model');
 const ProductCards = require('../api/models/product_cards.model');
-const OrdersItems = require('../api/models/orders_items.model');
+const OrdersItems = require('../api/models/orderItems.model');
 
 const defineRelations = async () => {
 // Relación entre Users y Orders (cliente)

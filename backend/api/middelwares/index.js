@@ -29,7 +29,8 @@ function checkAuth(req, res, next) {
 
 function checkAdmin (req, res, next) {
   // Después de verificar la identidad del usuario en el middleware anterior (checkAuth), podemos acceder a res.locals y comprobar el role del usuario logueado. Si no es admin, rechazamos la petición y no permitimos continuar
-  if (res.locals.user.role !== 'admin') {
+  if (res.locals.user.rol !== 'admin') {
+    console.log(res.locals.user)
     return res.status(401).send('User not authorized')
   }
 

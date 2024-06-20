@@ -19,7 +19,7 @@ const {
  
   
   router.post('', createUser); // Crear un nuevo usuario
-  router.get('', getAllUsers); // Obtener todos los usuarios
+  router.get('', checkAuth,checkAdmin, getAllUsers); // Obtener todos los usuarios
   router.get('/:id', getOneUser); // Obtener usuario por ID
   router.put('/:id', updateOneUser); // Actualizar un usuario
   router.delete('/:id', deleteOneUser); // Eliminar un usuario

@@ -1,47 +1,51 @@
-import React, { useState } from 'react';
-import { Container, Grid, Paper, Typography, List, ListItem, ListItemText, Box, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Grid, Paper, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-// Datos ficticios para el dashboard
-const totalInventory = [
-    { id: 1, title: 'Producto 1', quantity: 10 },
-    { id: 2, title: 'Producto 2', quantity: 20 },
-    { id: 3, title: 'Producto 3', quantity: 15 },
-    // Añadir más productos según sea necesario
-];
-
-const externalVendorsInventory = [
-    { id: 1, vendor: 'Vendedor 1', title: 'Producto A', quantity: 5 },
-    { id: 2, vendor: 'Vendedor 2', title: 'Producto B', quantity: 8 },
-    { id: 3, vendor: 'Vendedor 3', title: 'Producto C', quantity: 12 },
-    // Añadir más productos según sea necesario
-];
-
-const ordersInProgress = [
-    { id: 1, customer: 'Cliente 1', product: 'Producto 1', status: 'En progreso' },
-    { id: 2, customer: 'Cliente 2', product: 'Producto 2', status: 'En progreso' },
-    // Añadir más pedidos según sea necesario
-];
-
-const completedOrders = [
-    { id: 1, customer: 'Cliente 1', product: 'Producto 3', status: 'Completado' },
-    { id: 2, customer: 'Cliente 2', product: 'Producto 4', status: 'Completado' },
-    // Añadir más pedidos según sea necesario
-];
-
-const customers = [
-    { id: 1, name: 'Cliente 1', email: 'cliente1@example.com' },
-    { id: 2, name: 'Cliente 2', email: 'cliente2@example.com' },
-    // Añadir más clientes según sea necesario
-];
-
 const AdminDashboard = () => {
+    const [totalInventory, setTotalInventory] = useState([]);
+    const [externalVendorsInventory, setExternalVendorsInventory] = useState([]);
+    const [ordersInProgress, setOrdersInProgress] = useState([]);
+    const [completedOrders, setCompletedOrders] = useState([]);
+    const [customers, setCustomers] = useState([]);
     const [showTotalInventory, setShowTotalInventory] = useState(false);
     const [showExternalVendorsInventory, setShowExternalVendorsInventory] = useState(false);
     const [showOrdersInProgress, setShowOrdersInProgress] = useState(false);
     const [showCompletedOrders, setShowCompletedOrders] = useState(false);
     const [showCustomers, setShowCustomers] = useState(false);
+
+    useEffect(() => {
+        // Fetch data from backend
+        fetch('http://vps11.alpuca.com:3000/api/product-cards')
+            .then(response => response.json())
+            .then(data => setTotalInventory(data.product_cards))
+            .catch(error => console.error('Error fetching total inventory:', error));
+
+        // Fetch external vendors inventory (adjust endpoint as needed)
+        fetch('http://vps11.alpuca.com:3000/api/external-vendors')
+            .then(response => response.json())
+            .then(data => setExternalVendorsInventory(data.external_vendors))
+            .catch(error => console.error('Error fetching external vendors inventory:', error));
+
+        // Fetch orders in progress (adjust endpoint as needed)
+        fetch('http://vps11.alpuca.com:3000/api/orders?status=in-progress')
+            .then(response => response.json())
+            .then(data => setOrdersInProgress(data.orders))
+            .catch(error => console.error('Error fetching orders in progress:', error));
+
+        // Fetch completed orders (adjust endpoint as needed)
+        fetch('http://vps11.alpuca.com:3000/api/orders?status=completed')
+            .then(response => response.json())
+            .then(data => setCompletedOrders(data.orders))
+            .catch(error => console.error('Error fetching completed orders:', error));
+
+        // Fetch customers (adjust endpoint as needed)
+        fetch('http://vps11.alpuca.com:3000/api/customers')
+            .then(response => response.json())
+            .then(data => setCustomers(data.customers))
+            .catch(error => console.error('Error fetching customers:', error));
+    }, []);
 
     return (
         <>
@@ -62,7 +66,7 @@ const AdminDashboard = () => {
                                 <List>
                                     {totalInventory.map((item) => (
                                         <ListItem key={item.id}>
-                                            <ListItemText primary={`${item.title} - Cantidad: ${item.quantity}`} />
+                                            <ListItemText primary={`${item.title} - Cantidad: S: ${item.S}, M: ${item.M}, L: ${item.L}, XL: ${item.XL}`} />
                                         </ListItem>
                                     ))}
                                 </List>

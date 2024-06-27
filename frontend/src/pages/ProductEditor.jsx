@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Grid, MenuItem, Select, InputLabel, FormControl, Box, Card, CardContent, CardMedia, IconButton } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, TextField, Button, Grid, Box, Card, CardContent, CardMedia, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Navbar from '../components/Navbar';
@@ -7,50 +7,57 @@ import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import allProducts from '../data/products';
 
 // Validación con Yup
 const validationSchema = yup.object({
     title: yup.string().required('El título es obligatorio'),
     description: yup.string().required('La descripción es obligatoria'),
     price: yup.number().required('El precio es obligatorio').positive('El precio debe ser positivo'),
-    location: yup.string().required('La ubicación es obligatoria'),
-    tejido: yup.string().required('El tejido es obligatorio'),
-    unitsS: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
-    unitsM: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
-    unitsL: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
-    unitsXL: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
+    S: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
+    M: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
+    L: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
+    XL: yup.number().required('La cantidad es obligatoria').min(0, 'Debe ser al menos 0'),
 });
 
 const ProductEditor = () => {
     const [image, setImage] = useState(null);
-    const [products, setProducts] = useState(allProducts);
+    const [products, setProducts] = useState([]);
     const [editingProduct, setEditingProduct] = useState(null);
 
+    useEffect(() => {
+        fetch('http://vps11.alpuca.com:3000/api/product-cards')
+            .then(response => response.json())
+            .then(data => setProducts(data.product_cards))
+            .catch(error => console.error('Error fetching products:', error));
+    }, []);
+
     const handleEditProduct = (product) => {
+        console.log(product)
         setEditingProduct(product);
         formik.setValues({
             title: product.title,
             description: product.description,
             price: product.price,
-            location: product.location,
-            tejido: product.tejido,
-            unitsS: product.stock.S,
-            unitsM: product.stock.M,
-            unitsL: product.stock.L,
-            unitsXL: product.stock.XL,
+            S: product.S,
+            M: product.M,
+            L: product.L,
+            XL: product.XL,
         });
         setImage(product.image);
     };
 
     const handleDeleteProduct = (productId) => {
-        setProducts((prevProducts) => {
-            const updatedProducts = { ...prevProducts };
-            for (const category in updatedProducts) {
-                updatedProducts[category] = updatedProducts[category].filter((product) => product.id !== productId);
+        fetch(`http://vps11.alpuca.com:3000/api/product-cards/${productId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                setProducts(prevProducts => prevProducts.filter(product => product.product_id !== productId));
+            } else {
+                console.error('Error deleting product');
             }
-            return updatedProducts;
-        });
+        })
+        .catch(error => console.error('Error deleting product:', error));
     };
 
     const formik = useFormik({
@@ -58,12 +65,10 @@ const ProductEditor = () => {
             title: '',
             description: '',
             price: '',
-            location: '',
-            tejido: '',
-            unitsS: 0,
-            unitsM: 0,
-            unitsL: 0,
-            unitsXL: 0,
+            S: 0,
+            M: 0,
+            L: 0,
+            XL: 0,
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -71,33 +76,35 @@ const ProductEditor = () => {
                 ...values,
                 id: editingProduct ? editingProduct.id : Date.now(),
                 image: image,
-                stock: {
-                    S: values.unitsS,
-                    M: values.unitsM,
-                    L: values.unitsL,
-                    XL: values.unitsXL,
+                S: values.S,
+                M: values.M,
+                L: values.L,
+                XL: values.XL
+            }
+
+            const method = editingProduct ? 'PUT' : 'POST';
+            const url = editingProduct ? `http://vps11.alpuca.com:3000/api/product-cards/${editingProduct.product_id}` : 'http://vps11.alpuca.com:3000/api/product-cards';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json', 
+                    'Authorization': localStorage.token                 
                 },
-            };
-
-            setProducts((prevProducts) => {
-                const updatedProducts = { ...prevProducts };
+                body: JSON.stringify(updatedProduct),
+            })
+            .then(response => response.json())
+            .then(data => {
                 if (editingProduct) {
-                    // Update existing product
-                    for (const category in updatedProducts) {
-                        updatedProducts[category] = updatedProducts[category].map((product) =>
-                            product.id === editingProduct.id ? updatedProduct : product
-                        );
-                    }
+                    setProducts(prevProducts => prevProducts.map(product => product.product_id === data.result.id ? data.result : product));
                 } else {
-                    // Add new product
-                    updatedProducts[values.location].push(updatedProduct);
+                    setProducts(prevProducts => [...prevProducts, data.result]);
                 }
-                return updatedProducts;
-            });
-
-            setEditingProduct(null);
-            formik.resetForm();
-            setImage(null);
+                setEditingProduct(null);
+                formik.resetForm();
+                setImage(null);
+            })
+            .catch(error => console.error('Error saving product:', error));
         },
     });
 
@@ -119,7 +126,7 @@ const ProductEditor = () => {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Button variant="contained" component="label">
-                                Cargar foto
+                                Cargar foto!!!!!!
                                 <input type="file" hidden onChange={handleImageChange} />
                             </Button>
                             {image && (
@@ -167,89 +174,56 @@ const ProductEditor = () => {
                                 helperText={formik.touched.price && formik.errors.price}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                id="tejido"
-                                name="tejido"
-                                label="Tejido"
-                                value={formik.values.tejido}
-                                onChange={formik.handleChange}
-                                error={formik.touched.tejido && Boolean(formik.errors.tejido)}
-                                helperText={formik.touched.tejido && formik.errors.tejido}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="location-label">Ubicación</InputLabel>
-                                <Select
-                                    labelId="location-label"
-                                    id="location"
-                                    name="location"
-                                    value={formik.values.location}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.location && Boolean(formik.errors.location)}
-                                >
-                                    <MenuItem value="destacados">Destacados</MenuItem>
-                                    <MenuItem value="nuevas">Nuevas</MenuItem>
-                                    <MenuItem value="populares">Populares</MenuItem>
-                                    <MenuItem value="ofertas">Ofertas</MenuItem>
-                                </Select>
-                                {formik.touched.location && formik.errors.location && (
-                                    <Typography color="error">{formik.errors.location}</Typography>
-                                )}
-                            </FormControl>
-                        </Grid>
                         <Grid item xs={3}>
                             <TextField
                                 fullWidth
-                                id="unitsS"
-                                name="unitsS"
+                                id="S"
+                                name="S"
                                 label="Unidades S"
                                 type="number"
-                                value={formik.values.unitsS}
+                                value={formik.values.S}
                                 onChange={formik.handleChange}
-                                error={formik.touched.unitsS && Boolean(formik.errors.unitsS)}
-                                helperText={formik.touched.unitsS && formik.errors.unitsS}
+                                error={formik.touched.S && Boolean(formik.errors.S)}
+                                helperText={formik.touched.S && formik.errors.S}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
                                 fullWidth
-                                id="unitsM"
-                                name="unitsM"
+                                id="M"
+                                name="M"
                                 label="Unidades M"
                                 type="number"
-                                value={formik.values.unitsM}
+                                value={formik.values.M}
                                 onChange={formik.handleChange}
-                                error={formik.touched.unitsM && Boolean(formik.errors.unitsM)}
-                                helperText={formik.touched.unitsM && formik.errors.unitsM}
+                                error={formik.touched.M && Boolean(formik.errors.M)}
+                                helperText={formik.touched.M && formik.errors.M}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
                                 fullWidth
-                                id="unitsL"
-                                name="unitsL"
+                                id="L"
+                                name="L"
                                 label="Unidades L"
                                 type="number"
-                                value={formik.values.unitsL}
+                                value={formik.values.L}
                                 onChange={formik.handleChange}
-                                error={formik.touched.unitsL && Boolean(formik.errors.unitsL)}
-                                helperText={formik.touched.unitsL && formik.errors.unitsL}
+                                error={formik.touched.L && Boolean(formik.errors.L)}
+                                helperText={formik.touched.L && formik.errors.L}
                             />
                         </Grid>
                         <Grid item xs={3}>
                             <TextField
                                 fullWidth
-                                id="unitsXL"
-                                name="unitsXL"
+                                id="XL"
+                                name="XL"
                                 label="Unidades XL"
                                 type="number"
-                                value={formik.values.unitsXL}
+                                value={formik.values.XL}
                                 onChange={formik.handleChange}
-                                error={formik.touched.unitsXL && Boolean(formik.errors.unitsXL)}
-                                helperText={formik.touched.unitsXL && formik.errors.unitsXL}
+                                error={formik.touched.XL && Boolean(formik.errors.XL)}
+                                helperText={formik.touched.XL && formik.errors.XL}
                             />
                         </Grid>
                     </Grid>
@@ -268,7 +242,7 @@ const ProductEditor = () => {
                     Todos los productos
                 </Typography>
                 <Grid container spacing={4}>
-                    {Object.values(products).flat().map((product) => (
+                    {products.map((product) => (
                         <Grid item key={product.id} xs={12} sm={6} md={4}>
                             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                                 <CardMedia
@@ -282,17 +256,22 @@ const ProductEditor = () => {
                                         {product.title}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        {product.price.toFixed(2)} €
+                                        {parseFloat(product.price).toFixed(2)} €
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
                                         {product.description}
                                     </Typography>
                                 </CardContent>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
-                                    <IconButton color="primary" onClick={() => handleEditProduct(product)}>
-                                        <EditIcon />
+                                    
+                                    <IconButton color="primary" onClick={() =>{ 
+                                        console.log("Edit product ID:", product); 
+                                        handleEditProduct(product)}}>
+                                         <EditIcon />
                                     </IconButton>
-                                    <IconButton color="secondary" onClick={() => handleDeleteProduct(product.id)}>
+                                    <IconButton color="secondary" onClick={() => {
+                                        console.log("Edit product ID:", product.product_id);
+                                        handleDeleteProduct(product.product_id)}}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </Box>

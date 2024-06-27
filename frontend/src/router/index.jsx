@@ -1,7 +1,5 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-//import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Root from "../layouts";
 import LandingPage from '../pages/LandingPage';
 import AvisoLegal from '../pages/AvisoLegal';
@@ -14,8 +12,7 @@ import ProductDetail from '../pages/ProductDetail';
 import AdminDashboard from '../pages/AdminDashboard';
 import Checkout from '../pages/Checkout';
 import Login from '../pages/Login';
-import { CartProvider } from '../contexts/CartContext';
-import { createBrowserRouter, redirect } from 'react-router-dom'
+import { createBrowserRouter, redirect } from 'react-router-dom';
 
 const router = createBrowserRouter([
     {
@@ -65,23 +62,15 @@ const router = createBrowserRouter([
             {
                 path: '/login',
                 loader: () => {
-                    console.log('ENTRO TOKEN')
                     if(localStorage.getItem('token')) {
-                        console.log('ENTRO TOKEN')
                         return redirect('/admin')
                     }
-                    else {
-                        //console.log(localStorage.getItem('token'))
-                        console.log('NO ENTRO TOKEN')
-                        return null
-                    }
+                    return null
                 },
                 element: <Login />
             }
-            
         ]
     }
-])
+]);
 
-export default router
-
+export default router;
